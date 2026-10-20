@@ -1,15 +1,21 @@
+
 {
   "name": "expensepocket",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "A console-based expense tracking application built with TypeScript.",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "typescript",
+    "expense-tracker",
+    "mobile-computing"
+  ],
   "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "typescript": "^7.0.2"
   }
