@@ -1,0 +1,105 @@
+
+import type {
+  Expense,
+  ExpenseFilter
+} from "./expense.types";
+
+// 1. Print one expense with safe fallback
+export function printExpense(
+  expense: Expense
+): void {
+  const paymentMethod =
+    expense.paymentMethod ?? "Not specified";
+
+  const note =
+    expense.note ?? "No note";
+
+  console.log(
+    `${expense.id} | ${expense.title} | ` +
+    `${expense.amount.toLocaleString("vi-VN")} VND | ` +
+    `${expense.category} | ${expense.status} | ` +
+    `${paymentMethod} | ${note}`
+  );
+}
+
+// 2. Filter expenses by category or return all
+export function filterExpenses(
+  items: Expense[],
+  filter: ExpenseFilter
+): Expense[] {
+  if (filter === "all") {
+    return items;
+  }
+
+  return items.filter(
+    (expense) => expense.category === filter
+  );
+}
+
+// 3. Calculate total amount
+export function calculateTotalAmount(
+  items: Expense[]
+): number {
+  return items.reduce(
+    (total, expense) => total + expense.amount,
+    0
+  );
+}
+
+// 4. Find an expense by ID
+// Return null when no matching expense exists
+export function findExpenseById(
+  items: Expense[],
+  expenseId: string
+): Expense | null {
+  return (
+    items.find(
+      (expense) => expense.id === expenseId
+    ) ?? null
+  );
+}
+
+// 5. Validate unknown data using a custom type guard
+export function isExpense(
+  value: unknown
+): value is Expense {
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    Array.isArray(value)
+  ) {
+    return false;
+  }
+
+  const item = value as Record<string, unknown>;
+
+  const validCategory =
+    item.category === "food" ||
+    item.category === "transport" ||
+    item.category === "study" ||
+    item.category === "other";
+
+  const validStatus =
+    item.status === "planned" ||
+    item.status === "paid";
+
+  const validPaymentMethod =
+    item.paymentMethod === undefined ||
+    typeof item.paymentMethod === "string";
+
+  const validNote =
+    typeof item.note === "string" ||
+    item.note === null;
+
+  return (
+    typeof item.id === "string" &&
+    typeof item.title === "string" &&
+    typeof item.amount === "number" &&
+    Number.isFinite(item.amount) &&
+    item.amount >= 0 &&
+    validCategory &&
+    validStatus &&
+    validPaymentMethod &&
+    validNote
+  );
+}
