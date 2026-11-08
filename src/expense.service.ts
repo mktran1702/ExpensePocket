@@ -123,3 +123,55 @@ export function isExpense(
     validNote
   );
 }
+
+
+// 6. Returns spending totals and percentages for each category
+export function getCategorySpendingSummary(
+  items: Expense[]
+): {
+  category: Expense["category"];
+  total: number;
+  percentage: number;
+}[] {
+  const categories: Expense["category"][] = [
+    "food",
+    "transport",
+    "study",
+    "other"
+  ];
+
+  const grandTotal = calculateTotalAmount(items);
+
+  return categories.map((category) => {
+    const categoryTotal = items
+      .filter((expense) => expense.category === category)
+      .reduce((sum, expense) => sum + expense.amount, 0);
+
+    const percentage =
+      grandTotal === 0
+        ? 0
+        : Number(((categoryTotal / grandTotal) * 100).toFixed(2));
+
+    return {
+      category,
+      total: categoryTotal,
+      percentage
+    };
+  });
+}
+
+// 7. Finds expenses that meet or exceed a specified alert threshold
+export function findHighValueExpenses(
+  items: Expense[],
+  threshold: number
+): Expense[] {
+  if (!Number.isFinite(threshold) || threshold < 0) {
+    throw new RangeError(
+      "Threshold must be a non-negative finite number."
+    );
+  }
+
+  return items.filter(
+    (expense) => expense.amount >= threshold
+  );
+}

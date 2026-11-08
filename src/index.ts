@@ -8,10 +8,12 @@ import {
   printExpense,
   filterExpenses,
   calculateTotalAmount,
+  findExpenseById,
+  isExpense,
   calculateTotalByStatus,
   calculateBudgetBalance,
-  findExpenseById,
-  isExpense
+  getCategorySpendingSummary,
+  findHighValueExpenses
 } from "./expense.service";
 
 // Callback: simulate opening an expense
@@ -137,4 +139,34 @@ if (isExpense(rawInvalidExpense)) {
   );
 } else {
   console.log("Invalid expense data");
+}
+
+console.log("\n=== CATEGORY SPENDING BREAKDOWN ===");
+
+const categorySummary = getCategorySpendingSummary(expenses);
+
+categorySummary.forEach((item) => {
+  console.log(
+    `${item.category} | ` +
+    `${item.total.toLocaleString("vi-VN")} VND | ` +
+    `${item.percentage}%`
+  );
+});
+
+console.log("\n=== HIGH-VALUE EXPENSE ALERT ===");
+
+const alertThreshold = 100_000;
+const highValueExpenses = findHighValueExpenses(
+  expenses,
+  alertThreshold
+);
+
+console.log(
+  `Alert threshold: ${alertThreshold.toLocaleString("vi-VN")} VND`
+);
+
+if (highValueExpenses.length === 0) {
+  console.log("No high-value expenses found.");
+} else {
+  highValueExpenses.forEach(printExpense);
 }
