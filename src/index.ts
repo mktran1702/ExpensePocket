@@ -8,6 +8,8 @@ import {
   printExpense,
   filterExpenses,
   calculateTotalAmount,
+  calculateTotalByStatus,
+  calculateBudgetBalance,
   findExpenseById,
   isExpense
 } from "./expense.service";
@@ -65,6 +67,30 @@ console.log(
 console.log(
   "\n=== TOTAL AMOUNT ===",
   `${calculateTotalAmount(expenses).toLocaleString("vi-VN")} VND`
+);
+
+console.log("\n=== EXPENSE INSIGHTS ===");
+
+const paidTotal = calculateTotalByStatus(expenses, "paid");
+const plannedTotal = calculateTotalByStatus(expenses, "planned");
+
+const demoBudget = 300_000;
+const budgetBalance = calculateBudgetBalance(expenses, demoBudget);
+
+console.log(
+  `Paid total: ${paidTotal.toLocaleString("vi-VN")} VND`
+);
+
+console.log(
+  `Planned total: ${plannedTotal.toLocaleString("vi-VN")} VND`
+);
+
+console.log(
+  `Demo budget: ${demoBudget.toLocaleString("vi-VN")} VND`
+);
+
+console.log(
+  `Budget balance: ${budgetBalance.toLocaleString("vi-VN")} VND`
 );
 
 // 4. Open a valid and an invalid expense

@@ -46,6 +46,26 @@ export function calculateTotalAmount(
   );
 }
 
+export function calculateTotalByStatus(
+  items: Expense[],
+  status: Expense["status"]
+): number {
+  return items
+    .filter((expense) => expense.status === status)
+    .reduce((total, expense) => total + expense.amount, 0);
+}
+
+export function calculateBudgetBalance(
+  items: Expense[],
+  budget: number
+): number {
+  if (!Number.isFinite(budget) || budget < 0) {
+    throw new RangeError("Budget must be a finite, non-negative number.");
+  }
+
+  return budget - calculateTotalAmount(items);
+}
+
 // 4. Find an expense by ID
 // Return null when no matching expense exists
 export function findExpenseById(
