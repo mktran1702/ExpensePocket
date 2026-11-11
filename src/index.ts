@@ -4,6 +4,8 @@ import type {
   OnOpenExpense
 } from "./expense.types";
 
+import type { Expense } from "./expense.types";
+
 import {
   printExpense,
   filterExpenses,
@@ -13,7 +15,8 @@ import {
   calculateTotalByStatus,
   calculateBudgetBalance,
   getCategorySpendingSummary,
-  findHighValueExpenses
+  findHighValueExpenses,
+  getExpenseDetails
 } from "./expense.service";
 
 // Callback: simulate opening an expense
@@ -169,4 +172,60 @@ if (highValueExpenses.length === 0) {
   console.log("No high-value expenses found.");
 } else {
   highValueExpenses.forEach(printExpense);
+}
+
+console.log("\n=== OPTIONAL & NULLABLE TEST ===");
+
+const optionalNullableExpense: Expense = {
+  id: "TEST001",
+  title: "Sample expense",
+  amount: 30000,
+  category: "study",
+  status: "planned",
+  note: null
+};
+
+console.log(
+  getExpenseDetails(optionalNullableExpense)
+);
+
+console.log("\n=== UNKNOWN TYPE GUARD TEST ===");
+
+// Valid raw data
+const validRawData: unknown = {
+  id: "EXP007",
+  title: "Stationery",
+  amount: 45_000,
+  category: "study",
+  status: "paid",
+  paymentMethod: "Cash",
+  note: "Study supplies"
+};
+
+if (isExpense(validRawData)) {
+  console.log("Valid expense:", validRawData.title);
+  console.log(
+    "Amount:",
+    validRawData.amount.toLocaleString("vi-VN"),
+    "VND"
+  );
+  console.log("Status:", validRawData.status);
+} else {
+  console.log("Invalid expense data");
+}
+
+// Invalid raw data
+const invalidRawData: unknown = {
+  id: 101,
+  title: "Invalid expense",
+  amount: "45,000",
+  category: "study",
+  status: "paid",
+  note: null
+};
+
+if (isExpense(invalidRawData)) {
+  console.log("Valid expense:", invalidRawData.title);
+} else {
+  console.log("Invalid expense data");
 }

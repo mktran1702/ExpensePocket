@@ -1,7 +1,8 @@
 
 import type {
   Expense,
-  ExpenseFilter
+  ExpenseFilter,
+  ExpenseStatus
 } from "./expense.types";
 
 // 1. Print one expense with safe fallback
@@ -40,16 +41,22 @@ export function filterExpenses(
 export function calculateTotalAmount(
   items: Expense[]
 ): number {
-  return items.reduce(
-    (total, expense) => total + expense.amount,
-    0
-  );
+  return items
+    .filter((expense) => expense.status !== "cancelled")
+    .reduce(
+      (total, expense) => total + expense.amount,
+      0
+    );
 }
 
 export function calculateTotalByStatus(
   items: Expense[],
   status: Expense["status"]
 ): number {
+  if (status === "cancelled") {
+    return 0;
+  }
+
   return items
     .filter((expense) => expense.status === status)
     .reduce((total, expense) => total + expense.amount, 0);
@@ -60,7 +67,9 @@ export function calculateBudgetBalance(
   budget: number
 ): number {
   if (!Number.isFinite(budget) || budget < 0) {
-    throw new RangeError("Budget must be a finite, non-negative number.");
+    throw new RangeError(
+      "Budget must be a finite, non-negative number."
+    );
   }
 
   return budget - calculateTotalAmount(items);
@@ -83,6 +92,7 @@ export function findExpenseById(
 export function isExpense(
   value: unknown
 ): value is Expense {
+  // 1. Check whether value is a valid object
   if (
     typeof value !== "object" ||
     value === null ||
@@ -91,26 +101,33 @@ export function isExpense(
     return false;
   }
 
+  // 2. Treat object properties as unknown
   const item = value as Record<string, unknown>;
 
+  // 3. Validate category
   const validCategory =
     item.category === "food" ||
     item.category === "transport" ||
     item.category === "study" ||
     item.category === "other";
 
+  // 4. Validate status
   const validStatus =
     item.status === "planned" ||
-    item.status === "paid";
+    item.status === "paid" ||
+    item.status === "cancelled";
 
+  // 5. Validate optional paymentMethod
   const validPaymentMethod =
     item.paymentMethod === undefined ||
     typeof item.paymentMethod === "string";
 
+  // 6. Validate nullable note
   const validNote =
     typeof item.note === "string" ||
     item.note === null;
 
+  // 7. Return validation result
   return (
     typeof item.id === "string" &&
     typeof item.title === "string" &&
@@ -123,7 +140,6 @@ export function isExpense(
     validNote
   );
 }
-
 
 // 6. Returns spending totals and percentages for each category
 export function getCategorySpendingSummary(
@@ -144,7 +160,11 @@ export function getCategorySpendingSummary(
 
   return categories.map((category) => {
     const categoryTotal = items
-      .filter((expense) => expense.category === category)
+      .filter(
+        (expense) =>
+          expense.category === category &&
+          expense.status !== "cancelled"
+      )
       .reduce((sum, expense) => sum + expense.amount, 0);
 
     const percentage =
@@ -172,6 +192,44 @@ export function findHighValueExpenses(
   }
 
   return items.filter(
-    (expense) => expense.amount >= threshold
+    (expense) =>
+      expense.status !== "cancelled" &&
+      expense.amount >= threshold
   );
 }
+
+export function getStatusLabel(
+  status: ExpenseStatus
+): string {
+  switch (status) {
+    case "planned":
+      return "Planned";
+
+    case "paid":
+      return "Paid";
+
+    case "cancelled":
+      return "Cancelled";
+
+    default: {
+      const exhaustiveCheck: never = status;
+      return exhaustiveCheck;
+    }
+  }
+}
+
+export function getExpenseDetails(
+  expense: Expense
+): string {
+  const paymentMethod =
+    expense.paymentMethod ?? "Not specified";
+
+  const note =
+    expense.note ?? "No note";
+
+  return (
+    `Payment method: ${paymentMethod} | ` +
+    `Note: ${note}`
+  );
+}
+

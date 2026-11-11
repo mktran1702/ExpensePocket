@@ -44,5 +44,23 @@ export const expenses: Expense[] = [
     status: "planned",
     paymentMethod: "Cash",
     note: null
+  },
+  {
+    id: "EXP006",
+    title: "Movie ticket",
+    amount: 80000,
+    category: "other",
+    status: "cancelled",
+    paymentMethod: "Cash",
+    note: "Plan cancelled"
   }
 ];
+
+const optionalNullableExpense: Expense = {
+  id: "EXP007",
+  title: "New notebook",
+  amount: 30000,
+  category: "study",
+  status: "planned",
+  note: null
+};

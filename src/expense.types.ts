@@ -6,7 +6,8 @@ export type ExpenseCategory =
 
 export type ExpenseStatus =
   | "planned"
-  | "paid";
+  | "paid"
+  | "cancelled";
 
 export type ExpenseFilter =
   | "all"
@@ -18,7 +19,11 @@ export interface Expense {
   amount: number;
   category: ExpenseCategory;
   status: ExpenseStatus;
+
+  // Optional property
   paymentMethod?: string;
+
+  // Nullable property
   note: string | null;
 }
 
